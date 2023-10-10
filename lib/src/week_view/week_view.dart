@@ -22,6 +22,62 @@ import '_internal_week_view_page.dart';
 
 /// [Widget] to display week view.
 class WeekView<T extends Object?> extends StatefulWidget {
+  /// Main widget for week view.
+  const WeekView({
+    Key? key,
+    this.controller,
+    this.eventTileBuilder,
+    this.pageTransitionDuration = const Duration(milliseconds: 300),
+    this.pageTransitionCurve = Curves.ease,
+    this.heightPerMinute = 1,
+    this.timeLineOffset = 0,
+    this.showLiveTimeLineInAllDays = false,
+    this.width,
+    this.minDay,
+    this.maxDay,
+    this.initialDay,
+    this.hourIndicatorSettings,
+    this.timeLineBuilder,
+    this.timeLineWidth,
+    this.liveTimeIndicatorSettings,
+    this.onPageChange,
+    this.weekPageHeaderBuilder,
+    this.eventArranger,
+    this.weekTitleHeight = 50,
+    this.weekDayBuilder,
+    this.weekNumberBuilder,
+    this.backgroundColor,
+    this.scrollOffset = 0.0,
+    this.onEventTap,
+    this.onDateLongPress,
+    this.onDateTap,
+    this.weekDays = WeekDays.values,
+    this.showWeekends = true,
+    this.startDay = WeekDays.monday,
+    this.minuteSlotSize = MinuteSlotSize.minutes60,
+    this.weekDetectorBuilder,
+    this.headerStringBuilder,
+    this.timeLineStringBuilder,
+    this.weekDayStringBuilder,
+    this.weekDayDateStringBuilder,
+    this.headerStyle = const HeaderStyle(),
+    this.safeAreaOption = const SafeAreaOption(),
+    this.fullDayEventBuilder,
+  })  : assert((timeLineOffset) >= 0,
+            "timeLineOffset must be greater than or equal to 0"),
+        assert(width == null || width > 0,
+            "Calendar width must be greater than 0."),
+        assert(timeLineWidth == null || timeLineWidth > 0,
+            "Time line width must be greater than 0."),
+        assert(
+            heightPerMinute > 0, "Height per minute must be greater than 0."),
+        assert(
+          weekDetectorBuilder == null || onDateLongPress == null,
+          """If you use [weekPressDetectorBuilder] 
+          do not provide [onDateLongPress]""",
+        ),
+        super(key: key);
+
   /// Builder to build tile for events.
   final EventTileBuilder<T>? eventTileBuilder;
 
@@ -124,7 +180,7 @@ class WeekView<T extends Object?> extends StatefulWidget {
   final WeekNumberBuilder? weekNumberBuilder;
 
   /// Background color of week view page.
-  final Color backgroundColor;
+  final Color? backgroundColor;
 
   /// Scroll offset of week view page.
   final double scrollOffset;
@@ -182,62 +238,6 @@ class WeekView<T extends Object?> extends StatefulWidget {
 
   /// Display full day event builder.
   final FullDayEventBuilder<T>? fullDayEventBuilder;
-
-  /// Main widget for week view.
-  const WeekView({
-    Key? key,
-    this.controller,
-    this.eventTileBuilder,
-    this.pageTransitionDuration = const Duration(milliseconds: 300),
-    this.pageTransitionCurve = Curves.ease,
-    this.heightPerMinute = 1,
-    this.timeLineOffset = 0,
-    this.showLiveTimeLineInAllDays = false,
-    this.width,
-    this.minDay,
-    this.maxDay,
-    this.initialDay,
-    this.hourIndicatorSettings,
-    this.timeLineBuilder,
-    this.timeLineWidth,
-    this.liveTimeIndicatorSettings,
-    this.onPageChange,
-    this.weekPageHeaderBuilder,
-    this.eventArranger,
-    this.weekTitleHeight = 50,
-    this.weekDayBuilder,
-    this.weekNumberBuilder,
-    this.backgroundColor = Colors.white,
-    this.scrollOffset = 0.0,
-    this.onEventTap,
-    this.onDateLongPress,
-    this.onDateTap,
-    this.weekDays = WeekDays.values,
-    this.showWeekends = true,
-    this.startDay = WeekDays.monday,
-    this.minuteSlotSize = MinuteSlotSize.minutes60,
-    this.weekDetectorBuilder,
-    this.headerStringBuilder,
-    this.timeLineStringBuilder,
-    this.weekDayStringBuilder,
-    this.weekDayDateStringBuilder,
-    this.headerStyle = const HeaderStyle(),
-    this.safeAreaOption = const SafeAreaOption(),
-    this.fullDayEventBuilder,
-  })  : assert((timeLineOffset) >= 0,
-            "timeLineOffset must be greater than or equal to 0"),
-        assert(width == null || width > 0,
-            "Calendar width must be greater than 0."),
-        assert(timeLineWidth == null || timeLineWidth > 0,
-            "Time line width must be greater than 0."),
-        assert(
-            heightPerMinute > 0, "Height per minute must be greater than 0."),
-        assert(
-          weekDetectorBuilder == null || onDateLongPress == null,
-          """If you use [weekPressDetectorBuilder] 
-          do not provide [onDateLongPress]""",
-        ),
-        super(key: key);
 
   @override
   WeekViewState<T> createState() => WeekViewState<T>();
@@ -384,7 +384,8 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
               _weekHeaderBuilder(_currentStartDate, _currentEndDate),
               Expanded(
                 child: DecoratedBox(
-                  decoration: BoxDecoration(color: widget.backgroundColor),
+                  decoration: BoxDecoration(
+                      color: widget.backgroundColor ?? Colors.transparent),
                   child: SizedBox(
                     height: _height,
                     width: _width,
@@ -639,8 +640,10 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
         mainAxisSize: MainAxisSize.min,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Text(widget.weekDayStringBuilder?.call(date.weekday - 1) ??
-              Constants.weekTitles[date.weekday - 1]),
+          Text(
+            widget.weekDayStringBuilder?.call(date.weekday - 1) ??
+                Constants.weekTitles[date.weekday - 1],
+          ),
           Text(widget.weekDayDateStringBuilder?.call(date.day) ??
               date.day.toString()),
         ],

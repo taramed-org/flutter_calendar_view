@@ -21,7 +21,7 @@ class DayViewWidget extends StatelessWidget {
       startDuration: Duration(hours: 8),
       showHalfHours: true,
       heightPerMinute: 3,
-      timeLineBuilder: _timeLineBuilder,
+      timeLineBuilder: (date) => _timeLineBuilder(context, date: date),
       hourIndicatorSettings: HourIndicatorSettings(
         color: Theme.of(context).dividerColor,
       ),
@@ -32,7 +32,7 @@ class DayViewWidget extends StatelessWidget {
     );
   }
 
-  Widget _timeLineBuilder(DateTime date) {
+  Widget _timeLineBuilder(BuildContext context, {required DateTime date}) {
     if (date.minute != 0) {
       return Stack(
         clipBehavior: Clip.none,
@@ -44,7 +44,7 @@ class DayViewWidget extends StatelessWidget {
               "${date.hour}:${date.minute}",
               textAlign: TextAlign.right,
               style: TextStyle(
-                color: Colors.black.withAlpha(50),
+                color: Theme.of(context).dividerColor.withAlpha(50),
                 fontStyle: FontStyle.italic,
                 fontSize: 12,
               ),

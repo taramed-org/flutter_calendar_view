@@ -2,6 +2,7 @@ import 'dart:ui';
 
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:taramed_commonkit/taramed_commonkit.dart';
 
 import 'model/event.dart';
 import 'pages/mobile/mobile_home_page.dart';
@@ -20,10 +21,11 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return CalendarControllerProvider<Event>(
       controller: EventController<Event>()..addAll(_events),
-      child: MaterialApp(
-        title: 'Flutter Calendar Page Demo',
-        debugShowCheckedModeBanner: false,
-        theme: ThemeData.light(),
+      child: TaramedTheme(
+        // title: 'Flutter Calendar Page Demo',
+        // debugShowCheckedModeBanner: false,
+        // theme: ThemeData.dark(),
+        // themeMode: ThemeMode.light,
         scrollBehavior: ScrollBehavior().copyWith(
           dragDevices: {
             PointerDeviceKind.trackpad,

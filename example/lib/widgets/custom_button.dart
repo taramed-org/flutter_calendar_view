@@ -19,7 +19,7 @@ class CustomButton extends StatelessWidget {
           horizontal: 40,
         ),
         decoration: BoxDecoration(
-          color: AppColors.navyBlue,
+          color: Theme.of(context).primaryColor,
           borderRadius: BorderRadius.circular(7.0),
           boxShadow: [
             BoxShadow(
@@ -33,7 +33,7 @@ class CustomButton extends StatelessWidget {
         child: Text(
           title,
           style: TextStyle(
-            color: AppColors.white,
+            color: Theme.of(context).colorScheme.onPrimary,
             fontSize: 20,
           ),
         ),

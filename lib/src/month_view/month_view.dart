@@ -9,14 +9,48 @@ import '../calendar_controller_provider.dart';
 import '../calendar_event_data.dart';
 import '../components/components.dart';
 import '../components/safe_area_wrapper.dart';
-import '../constants.dart';
 import '../enumerations.dart';
 import '../event_controller.dart';
 import '../extensions.dart';
+import '../style/month_cell_style.dart';
 import '../style/header_style.dart';
 import '../typedefs.dart';
 
 class MonthView<T extends Object?> extends StatefulWidget {
+  /// Main [Widget] to display month view.
+  const MonthView({
+    Key? key,
+    this.showBorder = true,
+    this.borderColor,
+    this.cellBuilder,
+    this.minMonth,
+    this.maxMonth,
+    this.controller,
+    this.initialMonth,
+    this.borderSize = 1,
+    this.useAvailableVerticalSpace = false,
+    this.cellAspectRatio = 0.55,
+    this.headerBuilder,
+    this.weekDayBuilder,
+    this.pageTransitionDuration = const Duration(milliseconds: 300),
+    this.pageTransitionCurve = Curves.ease,
+    this.width,
+    this.onPageChange,
+    this.onCellTap,
+    this.onEventTap,
+    this.onDateLongPress,
+    this.startDay = WeekDays.monday,
+    this.headerStringBuilder,
+    this.dateStringBuilder,
+    this.weekDayStringBuilder,
+    this.headerStyle = const HeaderStyle(),
+    this.safeAreaOption = const SafeAreaOption(),
+    this.cellStyle,
+  })  : assert(
+            (cellBuilder != null && cellStyle == null) || (cellBuilder == null),
+            "If cellBuilder is used, cellStyle must be null."),
+        super(key: key);
+
   /// A function that returns a [Widget] that determines appearance of
   /// each cell in month calendar.
   final CellBuilder<T>? cellBuilder;
@@ -86,7 +120,7 @@ class MonthView<T extends Object?> extends StatefulWidget {
   /// Default value is [Colors.blue]
   ///
   /// It will take affect only if [showBorder] is set.
-  final Color borderColor;
+  final Color? borderColor;
 
   /// Page transition duration used when user try to change page using
   /// [MonthView.nextPage] or [MonthView.previousPage]
@@ -138,35 +172,8 @@ class MonthView<T extends Object?> extends StatefulWidget {
   /// Option for SafeArea.
   final SafeAreaOption safeAreaOption;
 
-  /// Main [Widget] to display month view.
-  const MonthView({
-    Key? key,
-    this.showBorder = true,
-    this.borderColor = Constants.defaultBorderColor,
-    this.cellBuilder,
-    this.minMonth,
-    this.maxMonth,
-    this.controller,
-    this.initialMonth,
-    this.borderSize = 1,
-    this.useAvailableVerticalSpace = false,
-    this.cellAspectRatio = 0.55,
-    this.headerBuilder,
-    this.weekDayBuilder,
-    this.pageTransitionDuration = const Duration(milliseconds: 300),
-    this.pageTransitionCurve = Curves.ease,
-    this.width,
-    this.onPageChange,
-    this.onCellTap,
-    this.onEventTap,
-    this.onDateLongPress,
-    this.startDay = WeekDays.monday,
-    this.headerStringBuilder,
-    this.dateStringBuilder,
-    this.weekDayStringBuilder,
-    this.headerStyle = const HeaderStyle(),
-    this.safeAreaOption = const SafeAreaOption(),
-  }) : super(key: key);
+  /// Cell Style for MonthView.
+  final MonthCellStyle? cellStyle;
 
   @override
   MonthViewState<T> createState() => MonthViewState<T>();
@@ -336,7 +343,10 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
                               width: _width,
                               height: _height,
                               controller: controller,
-                              borderColor: widget.borderColor,
+                              borderColor: widget.borderColor ??
+                                  Theme.of(context)
+                                      .primaryColor
+                                      .withOpacity(0.2),
                               borderSize: widget.borderSize,
                               cellBuilder: _cellBuilder,
                               cellRatio: _cellAspectRatio,
@@ -491,12 +501,22 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
   /// Default cell builder. Used when [widget.cellBuilder] is null
   Widget _defaultCellBuilder(
       date, List<CalendarEventData<T>> events, isToday, isInMonth) {
+    final backgroundColor = widget.cellStyle?.backgroundColor ??
+        Theme.of(context).primaryColor.withOpacity(0.1);
+    final inMonthBackgroundColor =
+        widget.cellStyle?.inMonthBackgroundColor ?? Colors.transparent;
     return FilledCell<T>(
       date: date,
       shouldHighlight: isToday,
-      backgroundColor: isInMonth ? Constants.white : Constants.offWhite,
+      backgroundColor: backgroundColor,
+      inMonthBackgroundColor: inMonthBackgroundColor,
+      // backgroundColor: isInMonth ? Constants.white : Constants.offWhite,
       events: events,
+      isInMonth: isInMonth,
       onTileTap: widget.onEventTap,
+      titleStyle: widget.cellStyle?.titleStyle,
+      highlightedTitleStyle: widget.cellStyle?.highlightedTitleStyle,
+      highlightColor: widget.cellStyle?.highlightColor,
       dateStringBuilder: widget.dateStringBuilder,
     );
   }

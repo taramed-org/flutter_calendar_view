@@ -5,11 +5,23 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../constants.dart';
+import '../../calendar_view.dart';
 import '../style/header_style.dart';
-import '../typedefs.dart';
 
 class CalendarPageHeader extends StatelessWidget {
+  /// Common header for month and day view In this header user can define format
+  /// in which date will be displayed by providing [dateStringBuilder] function.
+  const CalendarPageHeader({
+    Key? key,
+    required this.date,
+    required this.dateStringBuilder,
+    this.onNextDay,
+    this.onTitleTapped,
+    this.onPreviousDay,
+    this.secondaryDate,
+    this.headerStyle = const HeaderStyle(),
+  }) : super(key: key);
+
   /// When user taps on right arrow.
   final VoidCallback? onNextDay;
 
@@ -30,35 +42,8 @@ class CalendarPageHeader extends StatelessWidget {
   /// Provides string to display as title.
   final StringProvider dateStringBuilder;
 
-  // TODO: Need to remove after next release
-  /// background color of header.
-  @Deprecated("Use Header Style to provide background")
-  final Color backgroundColor;
-
-  // TODO: Need to remove after next release
-  /// Color of icons at both sides of header.
-  @Deprecated("Use Header Style to provide icon color")
-  final Color iconColor;
-
   /// Style for Calendar's header
   final HeaderStyle headerStyle;
-
-  /// Common header for month and day view In this header user can define format
-  /// in which date will be displayed by providing [dateStringBuilder] function.
-  const CalendarPageHeader({
-    Key? key,
-    required this.date,
-    required this.dateStringBuilder,
-    this.onNextDay,
-    this.onTitleTapped,
-    this.onPreviousDay,
-    this.secondaryDate,
-    @Deprecated("Use Header Style to provide background")
-    this.backgroundColor = Constants.headerBackground,
-    @Deprecated("Use Header Style to provide icon color")
-    this.iconColor = Constants.black,
-    this.headerStyle = const HeaderStyle(),
-  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -67,7 +52,10 @@ class CalendarPageHeader extends StatelessWidget {
       padding: headerStyle.headerPadding,
       decoration:
           // ignore_for_file: deprecated_member_use_from_same_package
-          headerStyle.decoration ?? BoxDecoration(color: backgroundColor),
+          headerStyle.decoration ??
+              BoxDecoration(
+                color: Theme.of(context).colorScheme.primaryContainer,
+              ),
       clipBehavior: Clip.antiAlias,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -84,7 +72,8 @@ class CalendarPageHeader extends StatelessWidget {
                   Icon(
                     Icons.chevron_left,
                     size: 30,
-                    color: iconColor,
+                    // color: iconColor,
+                    color: Theme.of(context).primaryColor,
                   ),
             ),
           Expanded(
@@ -109,7 +98,7 @@ class CalendarPageHeader extends StatelessWidget {
                   Icon(
                     Icons.chevron_right,
                     size: 30,
-                    color: iconColor,
+                    color: Theme.of(context).primaryColor,
                   ),
             ),
         ],

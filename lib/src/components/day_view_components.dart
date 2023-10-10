@@ -130,9 +130,6 @@ class DayPageHeader extends CalendarPageHeader {
   }) : super(
           key: key,
           date: date,
-          // ignore_for_file: deprecated_member_use_from_same_package
-          backgroundColor: backgroundColor,
-          iconColor: iconColor,
           onNextDay: onNextDay,
           onPreviousDay: onPreviousDay,
           onTitleTapped: onTitleTapped,

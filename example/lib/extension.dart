@@ -47,13 +47,13 @@ extension DateUtils on DateTime {
   String get weekdayToAbbreviatedString {
     switch (weekday) {
       case DateTime.monday:
-        return "M";
+        return "A";
       case DateTime.tuesday:
         return "T";
       case DateTime.wednesday:
         return "W";
       case DateTime.thursday:
-        return "T";
+        return "TH";
       case DateTime.friday:
         return "F";
       case DateTime.saturday:

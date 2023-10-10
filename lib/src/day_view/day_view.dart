@@ -23,6 +23,61 @@ import '../typedefs.dart';
 import '_internal_day_view_page.dart';
 
 class DayView<T extends Object?> extends StatefulWidget {
+  /// Main widget for day view.
+  const DayView({
+    Key? key,
+    this.eventTileBuilder,
+    this.dateStringBuilder,
+    this.timeStringBuilder,
+    this.controller,
+    this.showVerticalLine = true,
+    this.pageTransitionDuration = const Duration(milliseconds: 300),
+    this.pageTransitionCurve = Curves.ease,
+    this.width,
+    this.minDay,
+    this.maxDay,
+    this.initialDay,
+    this.hourIndicatorSettings,
+    this.heightPerMinute = 0.7,
+    this.timeLineBuilder,
+    this.timeLineWidth,
+    this.timeLineOffset = 0,
+    this.showLiveTimeLineInAllDays = false,
+    this.liveTimeIndicatorSettings,
+    this.onPageChange,
+    this.dayTitleBuilder,
+    this.eventArranger,
+    this.verticalLineOffset = 10,
+    this.backgroundColor,
+    this.scrollOffset = 0.0,
+    this.onEventTap,
+    this.onDateLongPress,
+    this.onDateTap,
+    this.minuteSlotSize = MinuteSlotSize.minutes60,
+    this.headerStyle = const HeaderStyle(),
+    this.fullDayEventBuilder,
+    this.safeAreaOption = const SafeAreaOption(),
+    this.scrollPhysics,
+    this.pageViewPhysics,
+    this.dayDetectorBuilder,
+    this.showHalfHours = false,
+    this.halfHourIndicatorSettings,
+    this.startDuration = const Duration(hours: 0),
+  })  : assert(timeLineOffset >= 0,
+            "timeLineOffset must be greater than or equal to 0"),
+        assert(width == null || width > 0,
+            "Calendar width must be greater than 0."),
+        assert(timeLineWidth == null || timeLineWidth > 0,
+            "Time line width must be greater than 0."),
+        assert(
+            heightPerMinute > 0, "Height per minute must be greater than 0."),
+        assert(
+          dayDetectorBuilder == null || onDateLongPress == null,
+          """If you use [dayPressDetectorBuilder]
+          do not provide [onDateLongPress]""",
+        ),
+        super(key: key);
+
   /// A function that returns a [Widget] that determines appearance of each
   /// cell in day calendar.
   final EventTileBuilder<T>? eventTileBuilder;
@@ -188,61 +243,6 @@ class DayView<T extends Object?> extends StatefulWidget {
   /// By default it will be Duration(hours:0)
   final Duration startDuration;
 
-  /// Main widget for day view.
-  const DayView({
-    Key? key,
-    this.eventTileBuilder,
-    this.dateStringBuilder,
-    this.timeStringBuilder,
-    this.controller,
-    this.showVerticalLine = true,
-    this.pageTransitionDuration = const Duration(milliseconds: 300),
-    this.pageTransitionCurve = Curves.ease,
-    this.width,
-    this.minDay,
-    this.maxDay,
-    this.initialDay,
-    this.hourIndicatorSettings,
-    this.heightPerMinute = 0.7,
-    this.timeLineBuilder,
-    this.timeLineWidth,
-    this.timeLineOffset = 0,
-    this.showLiveTimeLineInAllDays = false,
-    this.liveTimeIndicatorSettings,
-    this.onPageChange,
-    this.dayTitleBuilder,
-    this.eventArranger,
-    this.verticalLineOffset = 10,
-    this.backgroundColor = Colors.white,
-    this.scrollOffset = 0.0,
-    this.onEventTap,
-    this.onDateLongPress,
-    this.onDateTap,
-    this.minuteSlotSize = MinuteSlotSize.minutes60,
-    this.headerStyle = const HeaderStyle(),
-    this.fullDayEventBuilder,
-    this.safeAreaOption = const SafeAreaOption(),
-    this.scrollPhysics,
-    this.pageViewPhysics,
-    this.dayDetectorBuilder,
-    this.showHalfHours = false,
-    this.halfHourIndicatorSettings,
-    this.startDuration = const Duration(hours: 0),
-  })  : assert(timeLineOffset >= 0,
-            "timeLineOffset must be greater than or equal to 0"),
-        assert(width == null || width > 0,
-            "Calendar width must be greater than 0."),
-        assert(timeLineWidth == null || timeLineWidth > 0,
-            "Time line width must be greater than 0."),
-        assert(
-            heightPerMinute > 0, "Height per minute must be greater than 0."),
-        assert(
-          dayDetectorBuilder == null || onDateLongPress == null,
-          """If you use [dayPressDetectorBuilder]
-          do not provide [onDateLongPress]""",
-        ),
-        super(key: key);
-
   @override
   DayViewState<T> createState() => DayViewState<T>();
 }
@@ -280,8 +280,6 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
 
   late ScrollController _scrollController;
 
-  ScrollController get scrollController => _scrollController;
-
   late VoidCallback _reloadCallback;
 
   final _scrollConfiguration = EventScrollConfiguration<T>();
@@ -298,8 +296,7 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
     _regulateCurrentDate();
 
     _calculateHeights();
-    _scrollController =
-        ScrollController(initialScrollOffset: widget.scrollOffset);
+
     _pageController = PageController(initialPage: _currentIndex);
     _eventArranger = widget.eventArranger ?? SideEventArranger<T>();
     _assignBuilders();
@@ -323,10 +320,11 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
         // user adds new events.
         ..addListener(_reloadCallback);
     }
+  }
 
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      animateToDuration(widget.startDuration);
-    });
+  void _onScrollControllerCreated(ScrollController controller) {
+    _scrollController = controller;
+    animateToDuration(widget.startDuration);
   }
 
   @override
@@ -364,6 +362,7 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
   void dispose() {
     _controller?.removeListener(_reloadCallback);
     _pageController.dispose();
+
     super.dispose();
   }
 
@@ -383,7 +382,8 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
               _dayTitleBuilder(_currentDate),
               Expanded(
                 child: DecoratedBox(
-                  decoration: BoxDecoration(color: widget.backgroundColor),
+                  decoration: BoxDecoration(
+                      color: widget.backgroundColor ?? Colors.transparent),
                   child: SizedBox(
                     height: _height,
                     child: PageView.builder(
@@ -399,6 +399,9 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
                           builder: (_, __, ___) => InternalDayViewPage<T>(
                             key: ValueKey(
                                 _hourHeight.toString() + date.toString()),
+                            onScrollControllerCreated:
+                                _onScrollControllerCreated,
+                            scrollOffset: widget.scrollOffset,
                             width: _width,
                             liveTimeIndicatorSettings:
                                 _liveTimeIndicatorSettings,
@@ -424,7 +427,6 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
                             minuteSlotSize: widget.minuteSlotSize,
                             scrollNotifier: _scrollConfiguration,
                             fullDayEventBuilder: _fullDayEventBuilder,
-                            scrollController: _scrollController,
                             showHalfHours: widget.showHalfHours,
                             halfHourIndicatorSettings:
                                 _halfHourIndicatorSettings,

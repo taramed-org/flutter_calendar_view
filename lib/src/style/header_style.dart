@@ -2,6 +2,21 @@ import 'package:flutter/material.dart';
 
 /// Class for styling Calendar's header.
 class HeaderStyle {
+  /// Create a `HeaderStyle` of calendar view
+  const HeaderStyle({
+    this.headerTextStyle,
+    this.leftIcon,
+    this.rightIcon,
+    this.leftIconVisible = true,
+    this.rightIconVisible = true,
+    this.headerMargin = EdgeInsets.zero,
+    this.headerPadding = EdgeInsets.zero,
+    this.leftIconPadding = const EdgeInsets.all(10),
+    this.rightIconPadding = const EdgeInsets.all(10),
+    this.titleAlign = TextAlign.center,
+    this.decoration,
+  });
+
   /// Provide text style for calendar's header.
   final TextStyle? headerTextStyle;
 
@@ -38,19 +53,4 @@ class HeaderStyle {
 
   /// Decoration of whole header.
   final BoxDecoration? decoration;
-
-  /// Create a `HeaderStyle` of calendar view
-  const HeaderStyle({
-    this.headerTextStyle,
-    this.leftIcon,
-    this.rightIcon,
-    this.leftIconVisible = true,
-    this.rightIconVisible = true,
-    this.headerMargin = EdgeInsets.zero,
-    this.headerPadding = EdgeInsets.zero,
-    this.leftIconPadding = const EdgeInsets.all(10),
-    this.rightIconPadding = const EdgeInsets.all(10),
-    this.titleAlign = TextAlign.center,
-    this.decoration,
-  });
 }
