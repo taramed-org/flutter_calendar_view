@@ -1,9 +1,10 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:taramed_commonkit/taramed_commonkit.dart';
 
 import '../app_colors.dart';
 import '../enumerations.dart';
-import '../extension.dart';
+
 import '../model/event.dart';
 import 'add_event_widget.dart';
 
@@ -71,7 +72,7 @@ class CalendarConfig extends StatelessWidget {
                                 : AppColors.bluishGrey,
                           ),
                           child: Text(
-                            view.name.capitalized,
+                            view.name.capitalize,
                             style: TextStyle(
                               color: view == currentView
                                   ? Theme.of(context).colorScheme.onPrimary

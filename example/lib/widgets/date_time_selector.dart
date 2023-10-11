@@ -1,7 +1,7 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
 
-import '../extension.dart';
+import 'package:taramed_commonkit/taramed_commonkit.dart' hide GoRouterHelper;
 
 typedef Validator = String? Function(String? value);
 
@@ -54,13 +54,11 @@ class _DateTimeSelectorFormFieldState extends State<DateTimeSelectorFormField> {
 
     if (widget.displayDefault && widget.minimumDateTime != null) {
       if (widget.type == DateTimeSelectionType.date) {
-        _textEditingController.text = widget.minimumDateTime
-                ?.dateToStringWithFormat(format: "dd/MM/yyyy") ??
-            "";
+        _textEditingController.text =
+            widget.minimumDateTime?.format(format: "dd/MM/yyyy") ?? "";
       } else {
         _textEditingController.text =
-            widget.minimumDateTime?.getTimeInFormat(TimeStampFormat.parse_12) ??
-                "";
+            widget.minimumDateTime?.getTimeInFormat(TimeType.format12) ?? "";
       }
     }
   }
@@ -77,11 +75,11 @@ class _DateTimeSelectorFormFieldState extends State<DateTimeSelectorFormField> {
     if (widget.type == DateTimeSelectionType.date) {
       date = await _showDateSelector();
       _textEditingController.text =
-          (date ?? _selectedDate).dateToStringWithFormat(format: "dd/MM/yyyy");
+          (date ?? _selectedDate).format(format: "dd/MM/yyyy");
     } else {
       date = await _showTimeSelector();
       _textEditingController.text =
-          (date ?? _selectedDate).getTimeInFormat(TimeStampFormat.parse_12);
+          (date ?? _selectedDate).getTimeInFormat(TimeType.format12);
     }
 
     _selectedDate = date ?? DateTime.now();

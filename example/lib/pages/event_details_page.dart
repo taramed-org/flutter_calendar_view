@@ -1,5 +1,6 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
+import 'package:taramed_commonkit/taramed_commonkit.dart' hide GoRouterHelper;
 
 import '../extension.dart';
 
@@ -34,7 +35,7 @@ class DetailsPage extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         children: [
           Text(
-            "Date: ${event.date.dateToStringWithFormat(format: "dd/MM/yyyy")}",
+            "Date: ${event.date.format(format: "dd/MM/yyyy")}",
           ),
           SizedBox(
             height: 15.0,
@@ -49,8 +50,7 @@ class DetailsPage extends StatelessWidget {
                     children: [
                       Text("From"),
                       Text(
-                        event.startTime
-                                ?.getTimeInFormat(TimeStampFormat.parse_12) ??
+                        event.startTime?.getTimeInFormat(TimeType.format12) ??
                             "",
                       ),
                     ],
@@ -63,9 +63,7 @@ class DetailsPage extends StatelessWidget {
                     children: [
                       Text("To"),
                       Text(
-                        event.endTime
-                                ?.getTimeInFormat(TimeStampFormat.parse_12) ??
-                            "",
+                        event.endTime?.getTimeInFormat(TimeType.format12) ?? "",
                       ),
                     ],
                   ),
@@ -82,7 +80,7 @@ class DetailsPage extends StatelessWidget {
             SizedBox(
               height: 10.0,
             ),
-            Text(event.description),
+            Text(event.description ?? ""),
           ]
         ],
       ),

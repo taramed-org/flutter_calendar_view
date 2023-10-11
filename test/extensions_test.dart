@@ -1,5 +1,5 @@
 import 'package:calendar_view/calendar_view.dart';
-import 'package:test/test.dart';
+import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('DateTimeExtensions', () {
@@ -62,7 +62,7 @@ void testDatesOfWeekForAllWeekDayStarts(DateTime date) {
 }
 
 void testDatesOfWeek(DateTime firstDay, List<DateTime> result) {
-  expect(result.length, 7, reason: "There must be 7 dates in a week!");
+  expect(result.length, 7, reason: 'There must be 7 dates in a week!');
 
   expect(result[0], DateTime(firstDay.year, firstDay.month, firstDay.day));
   expect(result[1], DateTime(firstDay.year, firstDay.month, firstDay.day + 1));
@@ -133,7 +133,10 @@ void testLastDayOfTheWeekForAllWeekDays(DateTime lastDayOfTheWeek) {
 
 DateTime getWeekStartDay(DateTime date, WeekDays start) {
   final weekStartDay = DateTime(
-      date.year, date.month, date.day - (date.weekday - start.index - 1) % 7);
+    date.year,
+    date.month,
+    date.day - (date.weekday - start.index - 1) % 7,
+  );
   return DateTime(weekStartDay.year, weekStartDay.month, weekStartDay.day);
 }
 
@@ -154,10 +157,10 @@ WeekDays getWeekDays(DateTime date) {
     case 7:
       return WeekDays.sunday;
     default:
-      throw Exception("""
+      throw Exception('''
         Date $date has unrecognisable weekday expencted [1-7], 
         but ${date.weekday} was provided.
-          """);
+          ''');
   }
 }
 
