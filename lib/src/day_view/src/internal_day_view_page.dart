@@ -12,11 +12,11 @@ import 'package:flutter/material.dart';
 class InternalDayViewPage<T extends Object?> extends StatefulWidget {
   /// {@macro internal_day_view_page}
   const InternalDayViewPage({
+    required this.controller,
     required this.showVerticalLine,
     required this.width,
     required this.date,
     required this.eventTileBuilder,
-    required this.controller,
     required this.timeLineBuilder,
     required this.hourIndicatorSettings,
     required this.showLiveLine,

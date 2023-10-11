@@ -1,13 +1,16 @@
 import 'dart:ui';
 
 import 'package:calendar_view/calendar_view.dart';
+import 'package:example/pages/home_page.dart';
 import 'package:flutter/material.dart';
-import 'package:taramed_commonkit/taramed_commonkit.dart';
+import 'package:taramed_commonkit/taramed_commonkit.dart'
+    hide ChangeNotifierProvider;
 
 import 'model/event.dart';
 import 'pages/mobile/mobile_home_page.dart';
 import 'pages/web/web_home_page.dart';
 import 'widgets/responsive_widget.dart';
+import 'package:provider/provider.dart';
 
 DateTime get _now => DateTime.now();
 
@@ -19,8 +22,9 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
-    return CalendarControllerProvider<Event>(
-      controller: EventController<Event>()..addAll(_events),
+    final controller = EventController<Event>()..addAll(_events);
+    return ChangeNotifierProvider(
+      create: (_) => controller,
       child: TaramedTheme(
         // title: 'Flutter Calendar Page Demo',
         // debugShowCheckedModeBanner: false,
@@ -33,10 +37,7 @@ class MyApp extends StatelessWidget {
             PointerDeviceKind.touch,
           },
         ),
-        home: ResponsiveWidget(
-          mobileWidget: MobileHomePage(),
-          webWidget: WebHomePage(),
-        ),
+        home: HomePage(),
       ),
     );
   }

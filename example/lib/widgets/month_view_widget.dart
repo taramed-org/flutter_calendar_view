@@ -1,6 +1,6 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../model/event.dart';
 
 class MonthViewWidget extends StatelessWidget {
@@ -17,6 +17,7 @@ class MonthViewWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     return MonthView<Event>(
       key: state,
+      controller: context.watch<EventController<Event>>(),
       width: width,
     );
   }

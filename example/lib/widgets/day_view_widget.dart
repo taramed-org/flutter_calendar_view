@@ -1,6 +1,6 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/material.dart';
-
+import 'package:provider/provider.dart';
 import '../model/event.dart';
 
 class DayViewWidget extends StatelessWidget {
@@ -16,7 +16,8 @@ class DayViewWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return DayView<Event>(
-      key: state,
+      controller: context.watch<EventController<Event>>(),
+      // key: state,
       width: width,
       startDuration: Duration(hours: 8),
       showHalfHours: true,

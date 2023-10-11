@@ -131,6 +131,12 @@ extension DateTimeExtensions on DateTime {
 
   /// Returns a new [DateTime] object with hour and minutes calculated from
   /// [totalMinutes].
+  ///
+  /// Example usage:
+  /// ```dart
+  /// final now = DateTime.now(); // 2021-05-13 12:04:05.123456
+  /// final newDate = now.copyFromMinutes(1000); // 2021-05-13 16:40:05.123456
+  /// ```
   DateTime copyFromMinutes([int totalMinutes = 0]) => DateTime(
         year,
         month,

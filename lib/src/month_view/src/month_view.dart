@@ -3,7 +3,6 @@
 // that can be found in the LICENSE file.
 
 import 'package:calendar_view/calendar_view.dart';
-import 'package:calendar_view/src/model/src/exception.dart';
 import 'package:calendar_view/src/month_view/src/month_page_header.dart';
 import 'package:calendar_view/src/month_view/src/month_view_components.dart';
 import 'package:calendar_view/src/month_view/src/week_day_tile.dart';
@@ -16,12 +15,12 @@ class MonthView<T extends Object?> extends StatefulWidget {
   /// {@macro month_view}
   const MonthView({
     super.key,
+    this.controller,
     this.showBorder = true,
     this.borderColor,
     this.cellBuilder,
     this.minMonth,
     this.maxMonth,
-    this.controller,
     this.initialMonth,
     this.borderSize = 1,
     this.useAvailableVerticalSpace = false,
@@ -46,6 +45,16 @@ class MonthView<T extends Object?> extends StatefulWidget {
           (cellBuilder != null && cellStyle == null) || (cellBuilder == null),
           'If cellBuilder is used, cellStyle must be null.',
         );
+
+  /// A required parameters that controls events for month view.
+  ///
+  /// This will auto update month view when user adds events in controller.
+  /// This controller will store all the events. And returns events
+  /// for particular day.
+  ///
+  /// If [controller] is null it will take controller from
+  /// [CalendarControllerProvider.controller].
+  final EventController<T>? controller;
 
   /// A function that returns a [Widget] that determines appearance of
   /// each cell in month calendar.
@@ -126,16 +135,6 @@ class MonthView<T extends Object?> extends StatefulWidget {
   /// [MonthView.nextPage] or [MonthView.previousPage]
   final Curve pageTransitionCurve;
 
-  /// A required parameters that controls events for month view.
-  ///
-  /// This will auto update month view when user adds events in controller.
-  /// This controller will store all the events. And returns events
-  /// for particular day.
-  ///
-  /// If [controller] is null it will take controller from
-  /// [CalendarControllerProvider.controller].
-  final EventController<T>? controller;
-
   /// Defines width of default border
   ///
   /// Default value is 1
@@ -200,15 +199,15 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
 
   late DateWidgetBuilder _headerBuilder;
 
-  EventController<T>? _controller;
+  // EventController<T>? _controller;
 
-  late VoidCallback _reloadCallback;
+  // late VoidCallback _reloadCallback;
 
   @override
   void initState() {
     super.initState();
 
-    _reloadCallback = _reload;
+    // _reloadCallback = _reload;
 
     _setDateRange();
 
@@ -216,66 +215,66 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
     _currentDate = (widget.initialMonth ?? DateTime.now()).withoutTime;
 
     _regulateCurrentDate();
-
+    updateViewDimensions();
     // Initialize page controller to control page actions.
     _pageController = PageController(initialPage: _currentIndex);
 
     _assignBuilders();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
 
-    final newController = widget.controller ??
-        CalendarControllerProvider.of<T>(context).controller;
+  //   final newController = widget.controller ??
+  //       CalendarControllerProvider.of<T>(context).controller;
 
-    if (newController != _controller) {
-      _controller = newController;
+  //   if (newController != _controller) {
+  //     _controller = newController;
 
-      _controller!
-        // Removes existing callback.
-        ..removeListener(_reloadCallback)
+  //     _controller!
+  //       // Removes existing callback.
+  //       ..removeListener(_reloadCallback)
 
-        // Reloads the view if there is any change in controller or
-        // user adds new events.
-        ..addListener(_reloadCallback);
-    }
+  //       // Reloads the view if there is any change in controller or
+  //       // user adds new events.
+  //       ..addListener(_reloadCallback);
+  //   }
 
-    updateViewDimensions();
-  }
+  //   updateViewDimensions();
+  // }
 
-  @override
-  void didUpdateWidget(MonthView<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Update controller.
-    final newController = widget.controller ??
-        CalendarControllerProvider.of<T>(context).controller;
+  // @override
+  // void didUpdateWidget(MonthView<T> oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   // Update controller.
+  //   final newController = widget.controller ??
+  //       CalendarControllerProvider.of<T>(context).controller;
 
-    if (newController != _controller) {
-      _controller?.removeListener(_reloadCallback);
-      _controller = newController;
-      _controller?.addListener(_reloadCallback);
-    }
+  //   if (newController != _controller) {
+  //     _controller?.removeListener(_reloadCallback);
+  //     _controller = newController;
+  //     _controller?.addListener(_reloadCallback);
+  //   }
 
-    // Update date range.
-    if (widget.minMonth != oldWidget.minMonth ||
-        widget.maxMonth != oldWidget.maxMonth) {
-      _setDateRange();
-      _regulateCurrentDate();
+  //   // Update date range.
+  //   if (widget.minMonth != oldWidget.minMonth ||
+  //       widget.maxMonth != oldWidget.maxMonth) {
+  //     _setDateRange();
+  //     _regulateCurrentDate();
 
-      _pageController.jumpToPage(_currentIndex);
-    }
+  //     _pageController.jumpToPage(_currentIndex);
+  //   }
 
-    // Update builders and callbacks
-    _assignBuilders();
+  //   // Update builders and callbacks
+  //   _assignBuilders();
 
-    updateViewDimensions();
-  }
+  //   updateViewDimensions();
+  // }
 
   @override
   void dispose() {
-    _controller?.removeListener(_reloadCallback);
+    // _controller?.removeListener(_reloadCallback);
     _pageController.dispose();
     super.dispose();
   }
@@ -289,7 +288,7 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Container(
+            SizedBox(
               width: _width,
               child: _headerBuilder(_currentDate),
             ),
@@ -305,7 +304,7 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Container(
+                      SizedBox(
                         width: _width,
                         child: Row(
                           children: List.generate(
@@ -323,7 +322,7 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
                       Expanded(
                         child: LayoutBuilder(
                           builder: (context, constraints) {
-                            final _cellAspectRatio =
+                            final cellAspectRatio =
                                 widget.useAvailableVerticalSpace
                                     ? calculateCellAspectRatio(
                                         constraints.maxHeight,
@@ -339,14 +338,15 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
                                 onDateLongPress: widget.onDateLongPress,
                                 width: _width,
                                 height: _height,
-                                controller: controller,
+                                controller:
+                                    widget.controller ?? EventController<T>(),
                                 borderColor: widget.borderColor ??
                                     Theme.of(context)
                                         .primaryColor
                                         .withOpacity(0.2),
                                 borderSize: widget.borderSize,
                                 cellBuilder: _cellBuilder,
-                                cellRatio: _cellAspectRatio,
+                                cellRatio: cellAspectRatio,
                                 date: date,
                                 showBorder: widget.showBorder,
                                 startDay: widget.startDay,
@@ -367,24 +367,28 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
     );
   }
 
-  /// Returns [EventController] associated with this Widget.
-  ///
-  /// This will throw [AssertionError] if controller is called before its
-  /// initialization is complete.
-  EventController<T> get controller {
-    if (_controller == null) {
-      throw "EventController is not initialized yet.";
-    }
+  // /// Returns [EventController] associated with this Widget.
+  // ///
+  // /// This will throw [AssertionError] if controller is called before its
+  // /// initialization is complete.
+  // EventController<T> get controller {
+  //   if (_controller == null) {
+  //     throw "EventController is not initialized yet.";
+  //   }
 
-    return _controller!;
-  }
+  //   return _controller!;
+  // }
 
-  void _reload() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  // void _reload() {
+  //   if (mounted) {
+  //     setState(() {});
+  //   }
+  // }
 
+  /// Updates the dimensions of the month view based on the provided `width`
+  ///  or the width of the [MediaQuery] context.
+  /// Calculates the width and height of each cell based on the aspect ratio
+  /// provided by the `cellAspectRatio` property.
   void updateViewDimensions() {
     _width = widget.width ?? MediaQuery.of(context).size.width;
     _cellWidth = _width / 7;
@@ -392,9 +396,18 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
     _height = _cellHeight * 6;
   }
 
+  /// Calculates the aspect ratio of a cell in the month view based on the
+  /// given height.
+  ///
+  /// The aspect ratio is calculated by dividing the width of the cell by
+  ///  the height of the cell.
+  /// The height of the cell is calculated by dividing the given height by
+  ///  6, since there are 6 rows in the month view.
+  ///
+  /// Returns the aspect ratio of the cell.
   double calculateCellAspectRatio(double height) {
-    final _cellHeight = height / 6;
-    return _cellWidth / _cellHeight;
+    final cellHeight = height / 6;
+    return _cellWidth / cellHeight;
   }
 
   void _assignBuilders() {
@@ -443,7 +456,7 @@ class MonthViewState<T extends Object?> extends State<MonthView<T>> {
 
     assert(
       _minDate.isBefore(_maxDate),
-      "Minimum date should be less than maximum date.\n"
+      'Minimum date should be less than maximum date.\n'
       "Provided minimum date: $_minDate, maximum date: $_maxDate",
     );
 

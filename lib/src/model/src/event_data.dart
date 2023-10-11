@@ -5,37 +5,59 @@ import 'package:calendar_view/src/core/src/extensions.dart';
 
 import 'package:flutter/material.dart';
 
-/// {@template calendar_event_data}
-/// Defines data for event. This data will be used to display event on calendar.
+// TODO in future need to investigate if we can delete startTime and endTime
+
+/// {@template event_data}
+/// Base class for event data. This class is used to store event data.
 /// {@endtemplate}
-@immutable
-class CalendarEventData<T extends Object?> {
-  /// Stores all the events on [date]
-  const CalendarEventData({
-    required this.title,
+sealed class EventData<T extends Object?> {
+  /// {@macro event_data}
+  const EventData({
     required this.date,
-    this.description,
-    this.event,
-    this.color = Colors.blue,
+    DateTime? endDate,
     this.startTime,
     this.endTime,
-    this.titleStyle,
-    this.descriptionStyle,
-    DateTime? endDate,
-  }) : _endDate = endDate;
+    this.event,
+  }) : endDate = endDate ?? date;
 
   /// Defines the date of event.
   final DateTime date;
 
+  /// Defines the end date of the event.
+  final DateTime endDate;
+
   /// Defines the start time of the event.
   /// [endTime] and [startTime] will defines time on same day.
-  /// This is required when you are using [CalendarEventData] for `DayView`
+  /// This is required when you are using [EventData] for `DayView`
   final DateTime? startTime;
 
   /// Defines the end time of the event.
   /// [endTime] and [startTime] defines time on same day.
-  /// This is required when you are using [CalendarEventData] for `DayView`
+  /// This is required when you are using [EventData] for `DayView`
   final DateTime? endTime;
+
+  /// Event on [date].
+  final T? event;
+}
+
+/// {@template calendar_event_data}
+/// Defines data for event. This data will be used to display event on calendar.
+/// {@endtemplate}
+@immutable
+class CalendarEventData<T extends Object?> extends EventData<T> {
+  /// Stores all the events on [date]
+  const CalendarEventData({
+    required this.title,
+    required super.date,
+    this.description,
+    this.color = Colors.blue,
+    this.titleStyle,
+    this.descriptionStyle,
+    super.event,
+    super.startTime,
+    super.endTime,
+    super.endDate,
+  });
 
   /// Title of the event.
   final String title;
@@ -47,24 +69,11 @@ class CalendarEventData<T extends Object?> {
   /// This color will be used in default widgets provided by plugin.
   final Color color;
 
-  /// Event on [date].
-  final T? event;
-
-  final DateTime? _endDate;
-
   /// Define style of title.
   final TextStyle? titleStyle;
 
   /// Define style of description.
   final TextStyle? descriptionStyle;
-
-  /// Defines the end date of the event.
-  //! It was done intentionally that there is  getter for _endDate because
-  //! _endDate could potentially be null. So, we check if _endDate has a value.
-  //! If it has a value, we return it. If it doesn't have a value, we return
-  //! a default date.
-
-  DateTime get endDate => _endDate ?? date;
 
   /// Returns a Map<String, dynamic> representation of the object.
   Map<String, dynamic> toJson() => {

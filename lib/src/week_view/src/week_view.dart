@@ -13,7 +13,6 @@ import 'package:flutter/material.dart';
 class WeekView<T extends Object?> extends StatefulWidget {
   /// Main widget for week view.
   const WeekView({
-    super.key,
     this.controller,
     this.eventTileBuilder,
     this.pageTransitionDuration = const Duration(milliseconds: 300),
@@ -52,6 +51,7 @@ class WeekView<T extends Object?> extends StatefulWidget {
     this.headerStyle = const HeaderStyle(),
     this.safeAreaOption = const SafeAreaOption(),
     this.fullDayEventBuilder,
+    super.key,
   })  : assert(
           timeLineOffset >= 0,
           'timeLineOffset must be greater than or equal to 0',
@@ -74,6 +74,10 @@ class WeekView<T extends Object?> extends StatefulWidget {
           If you use [weekPressDetectorBuilder] 
           do not provide [onDateLongPress]''',
         );
+
+  /// Controller for Week view thia will refresh view when user adds or removes
+  /// event from controller.
+  final EventController<T>? controller;
 
   /// Builder to build tile for events.
   final EventTileBuilder<T>? eventTileBuilder;
@@ -146,10 +150,6 @@ class WeekView<T extends Object?> extends StatefulWidget {
 
   /// Transition curve for transition.
   final Curve pageTransitionCurve;
-
-  /// Controller for Week view thia will refresh view when user adds or removes
-  /// event from controller.
-  final EventController<T>? controller;
 
   /// Defines height occupied by one minute of time span. This parameter will
   /// be used to calculate total height of Week view.
@@ -272,9 +272,9 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
   late double _weekTitleWidth;
   late int _totalDaysInWeek;
 
-  late VoidCallback _reloadCallback;
+  // late VoidCallback _reloadCallback;
 
-  EventController<T>? _controller;
+  // EventController<T>? _controller;
 
   late ScrollController _scrollController;
 
@@ -289,7 +289,7 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
   void initState() {
     super.initState();
 
-    _reloadCallback = _reload;
+    // _reloadCallback = _reload;
 
     _setWeekDays();
     _setDateRange();
@@ -307,62 +307,62 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
     _assignBuilders();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
 
-    final newController = widget.controller ??
-        CalendarControllerProvider.of<T>(context).controller;
+  //   final newController = widget.controller ??
+  //       CalendarControllerProvider.of<T>(context).controller;
 
-    if (_controller != newController) {
-      _controller = newController;
+  //   if (_controller != newController) {
+  //     _controller = newController;
 
-      _controller!
-        // Removes existing callback.
-        ..removeListener(_reloadCallback)
+  //     _controller!
+  //       // Removes existing callback.
+  //       ..removeListener(_reloadCallback)
 
-        // Reloads the view if there is any change in controller or
-        // user adds new events.
-        ..addListener(_reloadCallback);
-    }
-  }
+  //       // Reloads the view if there is any change in controller or
+  //       // user adds new events.
+  //       ..addListener(_reloadCallback);
+  //   }
+  // }
 
-  @override
-  void didUpdateWidget(WeekView<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Update controller.
-    final newController = widget.controller ??
-        CalendarControllerProvider.of<T>(context).controller;
+  // @override
+  // void didUpdateWidget(WeekView<T> oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   // Update controller.
+  //   final newController = widget.controller ??
+  //       CalendarControllerProvider.of<T>(context).controller;
 
-    if (newController != _controller) {
-      _controller?.removeListener(_reloadCallback);
-      _controller = newController;
-      _controller?.addListener(_reloadCallback);
-    }
+  //   if (newController != _controller) {
+  //     _controller?.removeListener(_reloadCallback);
+  //     _controller = newController;
+  //     _controller?.addListener(_reloadCallback);
+  //   }
 
-    _setWeekDays();
+  //   _setWeekDays();
 
-    // Update date range.
-    if (widget.minDay != oldWidget.minDay ||
-        widget.maxDay != oldWidget.maxDay) {
-      _setDateRange();
-      _regulateCurrentDate();
+  //   // Update date range.
+  //   if (widget.minDay != oldWidget.minDay ||
+  //       widget.maxDay != oldWidget.maxDay) {
+  //     _setDateRange();
+  //     _regulateCurrentDate();
 
-      _pageController.jumpToPage(_currentIndex);
-    }
+  //     _pageController.jumpToPage(_currentIndex);
+  //   }
 
-    _eventArranger = widget.eventArranger ?? SideEventArranger<T>();
+  //   _eventArranger = widget.eventArranger ?? SideEventArranger<T>();
 
-    // Update heights.
-    _calculateHeights();
+  //   // Update heights.
+  //   _calculateHeights();
 
-    // Update builders and callbacks
-    _assignBuilders();
-  }
+  //   // Update builders and callbacks
+  //   _assignBuilders();
+  // }
 
   @override
   void dispose() {
-    _controller?.removeListener(_reloadCallback);
+    // _controller?.removeListener(_reloadCallback);
     _pageController.dispose();
     super.dispose();
   }
@@ -430,7 +430,8 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
                               timeLineWidth: _timeLineWidth,
                               verticalLineOffset: 0,
                               showVerticalLine: true,
-                              controller: controller,
+                              controller:
+                                  widget.controller ?? EventController<T>(),
                               hourHeight: _hourHeight,
                               scrollController: _scrollController,
                               eventArranger: _eventArranger,
@@ -453,21 +454,21 @@ class WeekViewState<T extends Object?> extends State<WeekView<T>> {
     );
   }
 
-  /// Returns [EventController] associated with this Widget.
-  ///
-  /// This will throw [AssertionError] if controller is called before its
-  /// initialization is complete.
-  EventController<T> get controller {
-    if (_controller == null) {
-      throw AssertionError(
-        'Controller is not initialized yet.\n'
-        'Make sure you are using CalendarControllerProvider or '
-        'passing controller in WeekView.',
-      );
-    }
+  // /// Returns [EventController] associated with this Widget.
+  // ///
+  // /// This will throw [AssertionError] if controller is called before its
+  // /// initialization is complete.
+  // EventController<T> get controller {
+  //   if (_controller == null) {
+  //     throw AssertionError(
+  //       'Controller is not initialized yet.\n'
+  //       'Make sure you are using CalendarControllerProvider or '
+  //       'passing controller in WeekView.',
+  //     );
+  //   }
 
-    return _controller!;
-  }
+  //   return _controller!;
+  // }
 
   /// Reloads page.
   void _reload() {

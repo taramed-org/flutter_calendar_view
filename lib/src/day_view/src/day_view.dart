@@ -17,11 +17,10 @@ import 'package:flutter/material.dart';
 class DayView<T extends Object?> extends StatefulWidget {
   /// {@macro day_view}
   const DayView({
-    super.key,
+    this.controller,
     this.eventTileBuilder,
     this.dateStringBuilder,
     this.timeStringBuilder,
-    this.controller,
     this.showVerticalLine = true,
     this.pageTransitionDuration = const Duration(milliseconds: 300),
     this.pageTransitionCurve = Curves.ease,
@@ -55,6 +54,7 @@ class DayView<T extends Object?> extends StatefulWidget {
     this.showHalfHours = false,
     this.halfHourIndicatorSettings,
     this.startDuration = Duration.zero,
+    super.key,
   })  : assert(
           timeLineOffset >= 0,
           'timeLineOffset must be greater than or equal to 0',
@@ -278,11 +278,12 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
 
   late DetectorBuilder _dayDetectorBuilder;
 
-  EventController<T>? _controller;
+  // EventController<T>? _controller;
 
   late ScrollController _scrollController;
 
-  late VoidCallback _reloadCallback;
+  // TODO this will be delete
+  // late VoidCallback _reloadCallback;
 
   final _scrollConfiguration = EventScrollConfiguration<T>();
 
@@ -290,7 +291,7 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
   void initState() {
     super.initState();
 
-    _reloadCallback = _reload;
+    // _reloadCallback = _reload;
     _setDateRange();
 
     _currentDate = (widget.initialDay ?? DateTime.now()).withoutTime;
@@ -304,65 +305,66 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
     _assignBuilders();
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
+  // TODO this will be delete
+  // @override
+  // void didChangeDependencies() {
+  //   super.didChangeDependencies();
 
-    final newController = widget.controller ??
-        CalendarControllerProvider.of<T>(context).controller;
+  //   final newController = widget.controller ??
+  //       CalendarControllerProvider.of<T>(context).controller;
 
-    if (newController != _controller) {
-      _controller = newController;
+  //   if (newController != _controller) {
+  //     _controller = newController;
 
-      _controller!
-        // Removes existing callback.
-        ..removeListener(_reloadCallback)
+  //     _controller!
+  //       // Removes existing callback.
+  //       ..removeListener(_reloadCallback)
 
-        // Reloads the view if there is any change in controller or
-        // user adds new events.
-        ..addListener(_reloadCallback);
-    }
-  }
+  //       // Reloads the view if there is any change in controller or
+  //       // user adds new events.
+  //       ..addListener(_reloadCallback);
+  //   }
+  // }
 
   void _onScrollControllerCreated(ScrollController controller) {
     _scrollController = controller;
     animateToDuration(widget.startDuration);
   }
 
-  @override
-  void didUpdateWidget(DayView<T> oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    // Update controller.
-    final newController = widget.controller ??
-        CalendarControllerProvider.of<T>(context).controller;
+  // @override
+  // void didUpdateWidget(DayView<T> oldWidget) {
+  //   super.didUpdateWidget(oldWidget);
+  //   // Update controller.
+  //   final newController = widget.controller ??
+  //       CalendarControllerProvider.of<T>(context).controller;
 
-    if (newController != _controller) {
-      _controller?.removeListener(_reloadCallback);
-      _controller = newController;
-      _controller?.addListener(_reloadCallback);
-    }
+  //   if (newController != _controller) {
+  //     _controller?.removeListener(_reloadCallback);
+  //     _controller = newController;
+  //     _controller?.addListener(_reloadCallback);
+  //   }
 
-    // Update date range.
-    if (widget.minDay != oldWidget.minDay ||
-        widget.maxDay != oldWidget.maxDay) {
-      _setDateRange();
-      _regulateCurrentDate();
+  //   // Update date range.
+  //   if (widget.minDay != oldWidget.minDay ||
+  //       widget.maxDay != oldWidget.maxDay) {
+  //     _setDateRange();
+  //     _regulateCurrentDate();
 
-      _pageController.jumpToPage(_currentIndex);
-    }
+  //     _pageController.jumpToPage(_currentIndex);
+  //   }
 
-    _eventArranger = widget.eventArranger ?? SideEventArranger<T>();
+  //   _eventArranger = widget.eventArranger ?? SideEventArranger<T>();
 
-    // Update heights.
-    _calculateHeights();
+  //   // Update heights.
+  //   _calculateHeights();
 
-    // Update builders and callbacks
-    _assignBuilders();
-  }
+  //   // Update builders and callbacks
+  //   _assignBuilders();
+  // }
 
   @override
   void dispose() {
-    _controller?.removeListener(_reloadCallback);
+    // _controller?.removeListener(_reloadCallback);
     _pageController.dispose();
 
     super.dispose();
@@ -404,6 +406,8 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
                           return ValueListenableBuilder(
                             valueListenable: _scrollConfiguration,
                             builder: (_, __, ___) => InternalDayViewPage<T>(
+                              controller:
+                                  widget.controller ?? EventController<T>(),
                               key: ValueKey(
                                 _hourHeight.toString() + date.toString(),
                               ),
@@ -429,7 +433,6 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
                               verticalLineOffset: widget.verticalLineOffset,
                               showVerticalLine: widget.showVerticalLine,
                               height: _height,
-                              controller: controller,
                               hourHeight: _hourHeight,
                               eventArranger: _eventArranger,
                               minuteSlotSize: widget.minuteSlotSize,
@@ -453,27 +456,28 @@ class DayViewState<T extends Object?> extends State<DayView<T>> {
     );
   }
 
-  /// Returns [EventController] associated with this Widget.
-  ///
-  /// This will throw [AssertionError] if controller is called before its
-  /// initialization is complete.
-  EventController<T> get controller {
-    if (_controller == null) {
-      throw Exception(
-        'Controller is not initialized yet.',
-      );
-    }
+  // /// Returns [EventController] associated with this Widget.
+  // ///
+  // /// This will throw [AssertionError] if controller is called before its
+  // /// initialization is complete.
+  // EventController<T> get controller {
+  //   if (_controller == null) {
+  //     throw Exception(
+  //       'Controller is not initialized yet.',
+  //     );
+  //   }
 
-    return _controller!;
-  }
+  //   return _controller!;
+  // }
 
-  /// Reloads page.
-  ///
-  void _reload() {
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  // TODO this will be delete
+  // /// Reloads page.
+  // ///
+  // void _reload() {
+  //   if (mounted) {
+  //     setState(() {});
+  //   }
+  // }
 
   /// Updates data related to size of this view.
   void _updateViewDimensions() {

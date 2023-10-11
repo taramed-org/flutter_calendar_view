@@ -1,6 +1,7 @@
 import 'package:calendar_view/calendar_view.dart';
 import 'package:flutter/widgets.dart';
 
+// TODO this will be removed in next major release.
 /// {@template calendar_controller_provider}
 /// This will provide controller to its subtree.
 /// If controller argument is not provided in calendar views then
