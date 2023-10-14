@@ -1,9 +1,54 @@
 // Copyright (c) 2021 Simform Solutions. All rights reserved.
 // Use of this source code is governed by a MIT-style license
 // that can be found in the LICENSE file.
-import 'package:calendar_view/src/core/src/extensions.dart';
+import 'package:calendar_view/src/util/src/extensions.dart';
 
 import 'package:flutter/material.dart';
+
+/// {@template event_type}
+/// Defines type of event.
+/// {@endtemplate}
+enum EventType {
+  /// Indicates holiday event.
+  holiday(code: 'holiday', name: 'Holiday', color: Colors.lime),
+
+  /// Indicates leave event.
+  leave(code: 'leave', name: 'Leave', color: Colors.red),
+
+  /// Indicates birthday event.
+  birthday(code: 'birthday', name: 'Birthday', color: Colors.yellowAccent),
+
+  /// Indicates meeting event.
+  meeting(code: 'meeting', name: 'Meeting', color: Colors.green),
+
+  /// Indicates travel event.
+  travel(code: 'travel', name: 'Travel', color: Colors.purple),
+
+  /// Indicates consultation event.
+  consultation(
+    code: 'consultation',
+    name: 'Consultation',
+    color: Colors.orange,
+  ),
+
+  /// Indicates others event.
+  others(code: 'others', name: 'Others');
+
+  const EventType({
+    required this.code,
+    required this.name,
+    this.color = Colors.blue,
+  });
+
+  /// Defines code of event type.
+  final String code;
+
+  /// Defines name of event type.
+  final String name;
+
+  /// Defines color of event type.
+  final Color color;
+}
 
 // TODO in future need to investigate if we can delete startTime and endTime
 
@@ -36,7 +81,7 @@ sealed class EventData<T extends Object?> {
   /// This is required when you are using [EventData] for `DayView`
   final DateTime? endTime;
 
-  /// Event on [date].
+  /// The associated event object.
   final T? event;
 }
 
@@ -51,6 +96,7 @@ class CalendarEventData<T extends Object?> extends EventData<T> {
     required super.date,
     this.description,
     this.color = Colors.blue,
+    this.eventType = EventType.others,
     this.titleStyle,
     this.descriptionStyle,
     super.event,
@@ -75,6 +121,9 @@ class CalendarEventData<T extends Object?> extends EventData<T> {
   /// Define style of description.
   final TextStyle? descriptionStyle;
 
+  /// Define event type.
+  final EventType eventType;
+
   /// Returns a Map<String, dynamic> representation of the object.
   Map<String, dynamic> toJson() => {
         'date': date,
@@ -84,6 +133,7 @@ class CalendarEventData<T extends Object?> extends EventData<T> {
         'title': title,
         'description': description,
         'endDate': endDate,
+        'type': eventType.code,
       };
 
   @override
@@ -108,7 +158,8 @@ class CalendarEventData<T extends Object?> extends EventData<T> {
         color == other.color &&
         titleStyle == other.titleStyle &&
         descriptionStyle == other.descriptionStyle &&
-        description == other.description;
+        description == other.description &&
+        eventType == other.eventType;
   }
 
   @override
@@ -123,5 +174,6 @@ class CalendarEventData<T extends Object?> extends EventData<T> {
         titleStyle,
         descriptionStyle,
         color,
+        eventType,
       );
 }

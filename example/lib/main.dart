@@ -7,14 +7,14 @@ import 'package:taramed_commonkit/taramed_commonkit.dart'
     hide ChangeNotifierProvider;
 
 import 'model/event.dart';
-import 'pages/mobile/mobile_home_page.dart';
-import 'pages/web/web_home_page.dart';
-import 'widgets/responsive_widget.dart';
+
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 DateTime get _now => DateTime.now();
 
-void main() {
+Future<void> main() async {
+  await initializeDateFormatting();
   runApp(MyApp());
 }
 

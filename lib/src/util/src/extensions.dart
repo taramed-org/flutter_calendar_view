@@ -101,10 +101,24 @@ extension DateTimeExtensions on DateTime {
   }
 
   /// Returns the first date of week containing the current date
+  ///
+  /// Example usage:
+  ///
+  /// ```dart
+  /// final now = DateTime.now(); // Jan 30, 2021 12:04:05.123456
+  /// final firstDayOfWeek = now.firstDayOfWeek(); // Jan 25, 2021 12:04:05.123456
+  /// ```
   DateTime firstDayOfWeek({WeekDays start = WeekDays.monday}) =>
       DateTime(year, month, day - ((weekday - start.index - 1) % 7));
 
   /// Returns the last date of week containing the current date
+  ///
+  /// Example usage:
+  ///
+  /// ```dart
+  /// final now = DateTime.now(); // Jan 30, 2021 12:04:05.123456
+  /// final lastDayOfWeek = now.lastDayOfWeek(); // Jan 31, 2021 12:04:05.123456
+  /// ```
   DateTime lastDayOfWeek({WeekDays start = WeekDays.monday}) =>
       DateTime(year, month, day + (6 - (weekday - start.index - 1) % 7));
 
@@ -158,7 +172,123 @@ extension DateTimeExtensions on DateTime {
   }
 
   /// Returns true if [DateTime] is start of day.
+  ///
+  /// Example usage:
+  /// ```dart
+  /// final now = DateTime.now(); // Jan 1, 2021 12:04:05.123456
+  /// now.isDayStart; // false
+  /// ```
   bool get isDayStart => hour % 24 == 0 && minute % 60 == 0;
+
+  /// Compares this [DateTime] object to [other] and returns `true`
+  /// if they represent the same day.
+  ///
+  /// Example usage:
+  ///
+  /// ```dart
+  /// final now = DateTime.now(); // 2021-05-13 12:04:05.123456
+  /// final tomorrow = now.add(Duration(days: 1)); // 2021-05-14 12:04:05.123456
+  /// final yesterday = now.subtract(Duration(days: 1)); // 2021-05-12 12:04:05.123456
+  ///
+  /// now.isSameDay(tomorrow); // false
+  /// now.isSameDay(yesterday); // false
+  /// now.isSameDay(now); // true
+  /// ```
+  bool compare(DateTime other) {
+    return year == other.year && month == other.month && day == other.day;
+  }
+
+  /// Returns true if this [DateTime] is before or equal to the [second]
+  ///  [DateTime].
+  ///
+  /// Example usage:
+  ///
+  /// ```dart
+  /// final now = DateTime.now(); // 2021-05-13 12:04:05.123456
+  /// final tomorrow = now.add(Duration(days: 1)); // 2021-05-14 12:04:05.123456
+  /// final yesterday = now.subtract(Duration(days: 1)); // 2021-05-12 12:04:05.123456
+  ///
+  /// now.isBeforeOrEq(tomorrow); // true
+  /// now.isBeforeOrEq(yesterday); // false
+  /// now.isBeforeOrEq(now); // true
+  /// ```
+  bool isBeforeOrEq(DateTime second) {
+    return isBefore(second) || isAtSameMomentAs(second);
+  }
+
+  /// Returns true if this [DateTime] is after or equal to the [second]
+  /// [DateTime].
+  ///
+  /// Example usage:
+  ///
+  /// ```dart
+  /// final now = DateTime.now(); // 2021-05-13 12:04:05.123456
+  /// final tomorrow = now.add(Duration(days: 1)); // 2021-05-14 12:04:05.123456
+  /// final yesterday = now.subtract(Duration(days: 1)); // 2021-05-12 12:04:05.123456
+  ///
+  /// now.isAfterOrEq(tomorrow); // false
+  /// now.isAfterOrEq(yesterday); // true
+  /// now.isAfterOrEq(now); // true
+  /// ```
+  bool isAfterOrEq(DateTime second) {
+    return isAfter(second) || isAtSameMomentAs(second);
+  }
+
+  /// Returns a new [DateTime] object representing the start of the day
+  ///  for the current [DateTime] object.
+  /// The time is set to 00:00:00.
+  ///
+  /// Example usage:
+  ///
+  /// ```dart
+  /// final now = DateTime.now(); // 2021-05-13 12:04:05.123456
+  /// final startOfDay = now.startOfDay; // 2021-05-13 00:00:00.000000
+  /// ```
+  DateTime get startOfDay => DateTime(year, month, day);
+
+  /// Returns a [DateTime] object representing the end of the day for the
+  ///  current [DateTime] object.
+  ///
+  /// The returned [DateTime] object has the same year, month, and day as the
+  /// current [DateTime] object, but with the time set to 0:00 of the next day.
+  ///
+  /// Example usage:
+  ///
+  /// ```dart
+  /// final now = DateTime.now(); // 2021-05-13 12:04:05.123456
+  /// final endOfDay = now.endOfDay; // 2021-05-14 00:00:00.000000
+  /// ```
+  DateTime get endOfDay => DateTime(year, month, day + 1);
+
+  /// Returns a new [DateTime] object with the same year, month, and day as
+  /// the original [DateTime] object,
+  /// but with the hour and minute values set to the hour and minute values
+  /// of the provided [service] parameter.
+  ///
+  /// Example usage:
+  ///
+  /// ```dart
+  /// final now = DateTime.now(); // 2021-05-13 12:04:05.123456
+  /// final service = DateTime(2021, 05, 13, 14, 30); // 2021-05-13 14:30:00.000000
+  /// final startOfDayService = now.startOfDayService(service); // 2021-05-13 14:30:00.000000
+  /// ```
+  DateTime startOfDayService(DateTime service) =>
+      DateTime(year, month, day, service.hour, service.minute);
+
+  /// Returns a new [DateTime] object with the same year, month, and day as
+  /// `this`, but with the hour and minute set to the hour and minute of
+  /// [service]. The returned [DateTime] object represents the end of the day
+  /// for the current [DateTime] object.
+  ///
+  /// Example usage:
+  ///
+  /// ```dart
+  /// final now = DateTime.now(); // 2021-05-13 12:04:05.123456
+  /// final service = DateTime(2021, 05, 13, 14, 30); // 2021-05-13 14:30:00.000000
+  /// final endOfDayService = now.endOfDayService(service); // 2021-05-13 14:30:00.000000
+  /// ```
+  DateTime endOfDayService(DateTime service) =>
+      DateTime(year, month, day, service.hour, service.minute);
 
   // @Deprecated(
   //     'This extension is not being used in this package and will be removed '

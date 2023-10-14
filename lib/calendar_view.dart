@@ -3,6 +3,7 @@
 /// that can be found in the LICENSE file.
 library calendar_view;
 
+export 'src/booking_view/booking_view.dart';
 export 'src/core/core.dart';
 export 'src/day_view/day_view.dart';
 export 'src/event_arrangers/event_arrangers.dart';
